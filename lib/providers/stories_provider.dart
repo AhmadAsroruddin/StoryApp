@@ -1,6 +1,8 @@
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:story_app/api/api_service.dart';
 import 'package:story_app/models/stories.dart';
@@ -8,7 +10,7 @@ import 'package:story_app/models/stories.dart';
 class StoriesProvider extends ChangeNotifier {
   final ApiService apiService;
 
-  StoriesProvider({required this.apiService}){
+  StoriesProvider({required this.apiService}) {
     fetchAllStories();
   }
   List<ListStory> _storyList = [];
@@ -20,9 +22,18 @@ class StoriesProvider extends ChangeNotifier {
 
   bool isUploading = false;
   String message = "";
+  LatLng? pickedLocation;
   UploadResponse? uploadResponse;
 
   Story? detailstory;
+
+  int? pageItems = 1;
+  int sizeItems = 4;
+
+  void setPickedLocation(LatLng latLng) {
+    pickedLocation = latLng;
+    notifyListeners();
+  }
 
   void setImagePath(String? value) {
     imagePath = value;
@@ -36,9 +47,16 @@ class StoriesProvider extends ChangeNotifier {
 
   Future<void> fetchAllStories() async {
     try {
-      print(' yeay ');
-      final stories = await apiService.getAllStories();
+      print(' yeay $pageItems');
+
+      final stories = await apiService.getAllStories(pageItems!, sizeItems);
+      pageItems = pageItems!+ 1;
       _storyList = stories.listStory;
+      if (stories.listStory.length < sizeItems) {
+        pageItems = null;
+      } else {
+        pageItems = pageItems! + 1;
+      }
       notifyListeners();
     } catch (e) {
       print(e.toString());
@@ -49,6 +67,8 @@ class StoriesProvider extends ChangeNotifier {
     List<int> bytes,
     String fileName,
     String description,
+    dynamic latitude,
+    dynamic longitude,
   ) async {
     try {
       message = "";
@@ -56,7 +76,8 @@ class StoriesProvider extends ChangeNotifier {
       isUploading = true;
       notifyListeners();
 
-      uploadResponse = await apiService.addStory(bytes, description, fileName);
+      uploadResponse = await apiService.addStory(
+          bytes, description, fileName, latitude, longitude);
       message = uploadResponse?.message ?? "success";
       isUploading = false;
       notifyListeners();

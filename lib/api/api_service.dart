@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'dart:convert';
 
@@ -36,6 +37,7 @@ class ApiService {
       Uri.parse("https://story-api.dicoding.dev/v1/login"),
       headers: {HttpHeaders.contentTypeHeader: "application/json"},
       body: json.encode(data),
+    
     );
 
     if (response.statusCode == 200) {
@@ -50,13 +52,15 @@ class ApiService {
     }
   }
 
-  Future<Stories> getAllStories() async {
+  Future<Stories> getAllStories(int page, int size) async {
     final pref = await SharedPreferences.getInstance();
     token = pref.getString("token");
 
+
     final response = await http.get(
-      Uri.parse("https://story-api.dicoding.dev/v1/stories"),
+      Uri.parse("https://story-api.dicoding.dev/v1/stories?size=$size&page=$page",),
       headers: {"Authorization": "Bearer $token"},
+    
     );
 
     if (response.statusCode == 200) {
@@ -82,8 +86,8 @@ class ApiService {
     }
   }
 
-  Future<UploadResponse> addStory(
-      List<int> bytes, String desc, String image) async {
+  Future<UploadResponse> addStory(List<int> bytes, String desc, String image,
+      dynamic lat, dynamic lon) async {
     final pref = await SharedPreferences.getInstance();
     token = pref.getString("token");
 
@@ -95,7 +99,11 @@ class ApiService {
     final multiPartFile =
         http.MultipartFile.fromBytes("photo", bytes, filename: image);
 
-    final Map<String, String> fields = {"description": desc};
+    final Map<String, String> fields = {
+      "description": desc,
+      "lat": lat.toString(),
+      "lon": lon.toString()
+    };
 
     final Map<String, String> headers = {
       "Content-type": "multipart/form-data",

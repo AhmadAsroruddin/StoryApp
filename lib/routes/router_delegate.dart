@@ -3,6 +3,7 @@ import 'package:story_app/routes/auth_repository.dart';
 import 'package:story_app/screens/addStory_screen.dart';
 import 'package:story_app/screens/detail_screen.dart';
 import 'package:story_app/screens/loading_screen.dart';
+import 'package:story_app/screens/map_screen.dart';
 
 import '../screens/login_screen.dart';
 import '../screens/register_screen.dart';
@@ -113,7 +114,7 @@ class MyRouterDelegate extends RouterDelegate
           ),
       ];
   List<Page> get _loggedOutStack => [
-        const MaterialPage(
+         MaterialPage(
           key: ValueKey('testPage'),
           child: HomeScreen(),
         ),

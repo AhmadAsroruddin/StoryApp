@@ -6,8 +6,39 @@ import 'package:story_app/providers/stories_provider.dart';
 import '../routes/router_delegate.dart';
 import '../widget/story_widget.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+class HomeScreen extends StatefulWidget {
+  HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final ScrollController scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    final apiProvider = context.read<StoriesProvider>();
+    scrollController.addListener(
+      () {
+        if (scrollController.position.pixels >=
+            scrollController.position.maxScrollExtent) {
+          if (apiProvider.pageItems != null) {
+            apiProvider.fetchAllStories();
+          }
+        }
+      },
+    );
+    Future.microtask(() async => apiProvider.fetchAllStories());
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    scrollController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,8 +68,17 @@ class HomeScreen extends StatelessWidget {
       body: Consumer<StoriesProvider>(
         builder: (context, value, child) {
           return ListView.builder(
-            itemCount: value.result.length,
+            controller: scrollController,
+            itemCount: value.result.length + (value.pageItems != null ? 1 : 0),
             itemBuilder: (context, index) {
+              if (index == value.result.length && value.pageItems != null) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(8),
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              }
               return GestureDetector(
                 onTap: () async {
                   await value.getDetail(value.result[index].id);

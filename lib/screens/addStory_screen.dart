@@ -2,10 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:story_app/providers/stories_provider.dart';
 import 'package:story_app/routes/router_delegate.dart';
+import 'package:story_app/widget/pick_map.dart';
 
 import 'package:story_app/widget/roundedInputField.dart';
 
@@ -78,6 +80,11 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
                 ],
               ),
             ),
+            SizedBox(
+              width: double.infinity,
+              height: MediaQuery.of(context).size.height * 0.3,
+              child: const AddMapWidget(),
+            ),
             ElevatedButton(
               onPressed: () {
                 final imagePath = context.read<StoriesProvider>().imagePath;
@@ -99,13 +106,16 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
     final provider = context.read<StoriesProvider>();
     final imagePath = provider.imagePath;
     final imageFile = provider.imageFile;
+    LatLng pickedLocation = provider.pickedLocation!;
 
     if (imagePath == null || imageFile == null) return;
 
+    print(pickedLocation);
     final fileName = imageFile.name;
     final bytes = await imageFile.readAsBytes();
 
-    await provider.addStory(bytes, fileName, _descController.text);
+    await provider.addStory(bytes, fileName, _descController.text,
+        pickedLocation.latitude, pickedLocation.longitude);
 
     if (provider.uploadResponse != null) {
       provider.setImageFile(null);
