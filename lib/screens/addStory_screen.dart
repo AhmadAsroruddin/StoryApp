@@ -54,7 +54,6 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
               height: 30,
             ),
             Expanded(
-              flex: 0,
               child: context.watch<StoriesProvider>().imagePath == null
                   ? const Align(
                       alignment: Alignment.center,
@@ -122,6 +121,8 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
     scaffoldMessengerState.showSnackBar(
       SnackBar(content: Text(provider.message)),
     );
+    Provider.of<StoriesProvider>(context, listen: false).reset();
+    // ignore: use_build_context_synchronously
     await Provider.of<StoriesProvider>(context, listen: false)
         .fetchAllStories();
     (Router.of(context).routerDelegate as MyRouterDelegate).backTo();

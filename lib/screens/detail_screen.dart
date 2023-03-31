@@ -49,9 +49,7 @@ class DetailScreen extends StatelessWidget {
                 height: 10,
               ),
               value.detailstory!.lat != null
-                  ? Container(
-                      width: double.infinity,
-                      height: MediaQuery.of(context).size.height * 0.3,
+                  ? Expanded(
                       child: MapScreen(
                         lat: double.parse(value.detailstory!.lat.toString()),
                         lon: double.parse(value.detailstory!.lon.toString()),

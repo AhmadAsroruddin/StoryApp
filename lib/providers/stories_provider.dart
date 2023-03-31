@@ -45,6 +45,12 @@ class StoriesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void reset() {
+    int? pageItems = 1;
+    int sizeItems = 4;
+    notifyListeners();
+  }
+
   Future<void> fetchAllStories() async {
     try {
       print(' yeay $pageItems');
@@ -79,13 +85,15 @@ class StoriesProvider extends ChangeNotifier {
       uploadResponse = await apiService.addStory(
           bytes, description, fileName, latitude, longitude);
       message = uploadResponse?.message ?? "success";
+
       isUploading = false;
       notifyListeners();
 
-      print(message);
+      print(' dasdasd $message');
     } catch (e) {
       isUploading = false;
       message = e.toString();
+      print(message);
       notifyListeners();
     }
   }
