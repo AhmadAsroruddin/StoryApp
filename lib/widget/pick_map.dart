@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:provider/provider.dart';
+import 'package:geocoding/geocoding.dart' as geo;
 
 import '../providers/stories_provider.dart';
 
@@ -20,6 +21,7 @@ class _AddMapWidgetState extends State<AddMapWidget> {
   }
 
   LatLng devicePosition = const LatLng(12, 12);
+  geo.Placemark? placemark;
   late GoogleMapController mapController;
   final Set<Marker> markers = {};
   @override
@@ -44,9 +46,22 @@ class _AddMapWidgetState extends State<AddMapWidget> {
     );
   }
 
-  void defineMarker(LatLng latLng) {
-    final marker = Marker(markerId: const MarkerId("source"), position: latLng);
+  void defineMarker(LatLng latLng) async {
+    final info =
+        await geo.placemarkFromCoordinates(latLng.latitude, latLng.longitude);
+
+    final place = info[0];
+    String street = place.street!;
+    String address =
+        '${place.subLocality}, ${place.locality}, ${place.postalCode}, ${place.country}';
+
+    final marker = Marker(
+      markerId: const MarkerId("source"),
+      position: latLng,
+      infoWindow: InfoWindow(title: street, snippet: address),
+    );
     setState(() {
+      placemark = place;
       markers.clear();
       markers.add(marker);
     });

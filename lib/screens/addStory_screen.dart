@@ -54,7 +54,7 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
               height: 30,
             ),
             Expanded(
-              flex: 1,
+              flex: 0,
               child: context.watch<StoriesProvider>().imagePath == null
                   ? const Align(
                       alignment: Alignment.center,
@@ -80,9 +80,7 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
                 ],
               ),
             ),
-            SizedBox(
-              width: double.infinity,
-              height: MediaQuery.of(context).size.height * 0.3,
+            Expanded(
               child: const AddMapWidget(),
             ),
             ElevatedButton(

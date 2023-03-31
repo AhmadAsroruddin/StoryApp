@@ -23,7 +23,7 @@ class DetailScreen extends StatelessWidget {
                   height: MediaQuery.of(context).size.height * 0.4,
                   width: MediaQuery.of(context).size.height * 1,
                   child: FadeInImage.assetNetwork(
-                      placeholder: ' assets/blocks.gif',
+                      placeholder: 'assets/block.gif',
                       image: value.detailstory!.photoUrl),
                 ),
               ),

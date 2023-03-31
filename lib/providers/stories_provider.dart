@@ -50,8 +50,8 @@ class StoriesProvider extends ChangeNotifier {
       print(' yeay $pageItems');
 
       final stories = await apiService.getAllStories(pageItems!, sizeItems);
-      pageItems = pageItems!+ 1;
-      _storyList = stories.listStory;
+      pageItems = pageItems! + 1;
+      _storyList.addAll(stories.listStory);
       if (stories.listStory.length < sizeItems) {
         pageItems = null;
       } else {
